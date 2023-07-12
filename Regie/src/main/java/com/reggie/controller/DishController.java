@@ -118,4 +118,55 @@ public class DishController {
         dishService.updateWithFlavor(dishDto);
         return R.success("新增菜品成功");
     }
+
+
+    /**
+     * 批量停售
+     */
+    @PostMapping("/status/0")
+    public R<String> stopSelling(@RequestParam List<Long> ids){
+        ids.stream().map((item)->{
+            //查询出来id
+            String id = item.toString();
+            //根据ID查询数据库，查询该用户的所有信息
+            Dish dish = dishService.getById(id);
+            //更改该用户的状态
+            dish.setStatus(0);
+            //将更改的数据重新保存到数据库中，是更新数据（update）不是保存数据（save）
+            dishService.updateById(dish);
+            return item;
+        }).collect(Collectors.toList());
+        return R.success("停售成功");
+    }
+
+    /**
+     * 批量起售
+     */
+    @PostMapping("/status/1")
+    public R<String> startSelling(@RequestParam List<Long> ids){
+        ids.stream().map((item)->{
+            //获取用户Id
+            String id = item.toString();
+            //根据ID查询数据库，查询用户所有信息
+            Dish dish = dishService.getById(id);
+            //更改用户状态
+            dish.setStatus(1);
+            //将更新后的数据重新保存到数据库中，是更新数据（update）不是保存数据（save）
+            dishService.updateById(dish);
+            return item;
+        }).collect(Collectors.toList());
+        return R.success("起售成功");
+    }
+
+
+    /**
+     * 删除菜品信息
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public R<String> delete(@RequestParam List<Long> ids){
+        dishService.removeByIds(ids);
+        return R.success("删除成功");
+    }
 }
